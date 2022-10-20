@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    @if (Auth::check())
 
     <h1>タスク新規作成ページ</h1>
 
@@ -21,4 +22,12 @@
             {!! Form::close() !!}
         </div>
     </div>
+    @else
+        <div class="center jumbotron">
+            <div class="text-center">
+                {{-- ユーザ登録ページへのリンク --}}
+                {!! link_to_route('signup.get', 'Sign up now!', [], ['class' => 'btn btn-lg btn-primary']) !!}
+            </div>
+        </div>
+    @endif
 @endsection
