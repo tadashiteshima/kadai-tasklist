@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+//下記の内容を追記する
+use Illuminate\Support\Facades\Auth;
+
 use App\Task;    // 追加
 
 class TasksController extends Controller
@@ -42,6 +45,7 @@ class TasksController extends Controller
         
         // タスクを作成
         $task = new Task;
+        $task->user_id = Auth::id();
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
@@ -68,10 +72,14 @@ class TasksController extends Controller
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
-        // タスク編集ビューでそれを表示
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        if (\Auth::id() === $task->user_id) {
+            // タスク編集ビューでそれを表示
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);
+        }else{
+             return redirect('/');
+        }
     }
 
     // putまたはpatchでtasks/（任意のid）にアクセスされた場合の「更新処理」
@@ -99,10 +107,12 @@ class TasksController extends Controller
     {
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
-        // タスクを削除
-        $task->delete();
-
-        // トップページへリダイレクトさせる
+        
+        if (\Auth::id() === $task->user_id) {
+            $task->delete();
+        }
+        
+        // 前のURLへリダイレクトさせる
         return redirect('/');
     }
 }
