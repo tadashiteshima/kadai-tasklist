@@ -71,13 +71,18 @@ class TasksController extends Controller
     // getでtasks/（任意のid）にアクセスされた場合の「取得表示処理」
     public function show($id)
     {
-        // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
-        // タスク詳細ビューでそれを表示
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+        if (\Auth::id() === $task->user_id) {
+            
+            // タスク詳細ビューでそれを表示
+            return view('tasks.show', [
+                'task' => $task,
+            ]);
+            
+        }else{
+            return redirect('/');
+        }
     }
 
     // getでtasks/（任意のid）/editにアクセスされた場合の「更新画面表示処理」
